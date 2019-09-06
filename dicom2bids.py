@@ -20,7 +20,7 @@ import subprocess
 import time
 import zipfile
 import tempfile
-import dicom as dicomLib
+import pydicom
 from shutil import copy as fileCopy
 from nipype.interfaces.dcm2nii import Dcm2nii
 from collections import OrderedDict
@@ -395,7 +395,7 @@ for scanid, seriesdesc in zip(reversed(scanIDList), reversed(seriesDescList)):
 
     if usingDicom:
         print('Checking modality in DICOM headers of file %s.' % name)
-        d = dicomLib.read_file(name)
+        d = pydicom.dcmread(name)
         modalityHeader = d.get((0x0008, 0x0060), None)
         if modalityHeader:
             print('Modality header: %s' % modalityHeader)

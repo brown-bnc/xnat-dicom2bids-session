@@ -2,7 +2,7 @@ FROM python:3.7
 
 RUN apt-get update && apt-get install -y curl zip pigz
 
-RUN pip install dicom nipype requests && \
+RUN pip install pydicom nipype requests && \
     rm -r ${HOME}/.cache/pip 
 
 RUN cd /opt && \
