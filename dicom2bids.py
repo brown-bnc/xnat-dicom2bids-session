@@ -107,6 +107,8 @@ parser.add_argument("--overwrite", help="Overwrite NIFTI files if they exist")
 parser.add_argument("--upload-by-ref", help="Upload \"by reference\". Only use if your host can read your file system.")
 parser.add_argument("--workflowId", help="Pipeline workflow ID")
 parser.add_argument('--version', action='version', version='%(prog)s 1')
+# parser.add_argument("--bidsmap", help="JSON string with bids-map", required=True)
+# parser.add_argument("--verbose", default=False, help="Run in verbose mode")
 
 args, unknown_args = parser.parse_known_args()
 host = cleanServer(args.host)
@@ -118,6 +120,8 @@ dicomdir = args.dicomdir
 niftidir = args.niftidir
 workflowId = args.workflowId
 uploadByRef = isTrue(args.upload_by_ref)
+# bidsmap = args.bidsmap
+# verbose = args.isTrue(args.verbose)
 dcm2niixArgs = unknown_args if unknown_args is not None else []
 
 imgdir = niftidir + "/IMG"
@@ -173,7 +177,6 @@ if project is None or subject is None:
         print("Subject label: " + subject)
 
 # Get list of scan ids
-print()
 print("Get scan list for session ID %s." % session)
 r = get(host + "/data/experiments/%s/scans" % session, params={"format": "json"})
 scanRequestResultList = r.json()["ResultSet"]["Result"]
@@ -187,31 +190,44 @@ if set(seriesDescList) == set(['']):
     seriesDescList = [scan['type'] for scan in scanRequestResultList]
     print('Fell back to scan types %s' % ', '.join(seriesDescList))
 
-# Get site- and project-level configs
+# Read bids map from input config
 bidsmaplist = []
-print()
-print("Get site-wide BIDS map")
-# We don't use the convenience get() method because that throws exceptions when the object is not found.
-r = sess.get(host + "/data/config/bids/bidsmap", params={"contents": True})
-if r.ok:
-    bidsmaptoadd = r.json()
-    for mapentry in bidsmaptoadd:
-        if mapentry not in bidsmaplist:
-            bidsmaplist.append(mapentry)
-else:
-    print("Could not read site-wide BIDS map")
+# print("Loading bidsmap: " + bidsmap)
+# with open(bidsmap, 'r') as f:
+#     bidsmaplist = json.load(f)
+
+# bidsmaptoadd = json.loads(bidsmap)
+# for mapentry in bidsmaptoadd:
+#     if mapentry not in bidsmaplist:
+#         bidsmaplist.append(mapentry)
+
+
+# Get site- and project-level configs
+# bidsmaplist = []
+# print()
+# print("Get site-wide BIDS map")
+# # We don't use the convenience get() method because that throws exceptions when the object is not found.
+# r = sess.get(host + "/data/config/bids/bidsmap", params={"contents": True})
+# if r.ok:
+#     bidsmaptoadd = r.json()
+#     for mapentry in bidsmaptoadd:
+#         if mapentry not in bidsmaplist:
+#             bidsmaplist.append(mapentry)
+# else:
+#     print("Could not read site-wide BIDS map")
 
 print("Get project BIDS map if one exists")
-r = sess.get(host + "/data/projects/%s/config/bids/bidsmap" % project, params={"contents": True})
+r = sess.get(host + "/data/projects/%s/resources/bids/files/bidsmap.json" % project, params={"contents": True})
 if r.ok:
     bidsmaptoadd = r.json()
+    print("BIDS map1: ",  bidsmaptoadd)
     for mapentry in bidsmaptoadd:
         if mapentry not in bidsmaplist:
             bidsmaplist.append(mapentry)
 else:
     print("Could not read project BIDS map")
 
-# print "BIDS map: " + json.dumps(bidsmaplist)
+print("BIDS map: ", json.dumps(bidsmaplist))
 
 # Collapse human-readable JSON to dict for processing
 bidsnamemap = {x['series_description'].lower(): x['bidsname'] for x in bidsmaplist if 'series_description' in x and 'bidsname' in x}

@@ -1,0 +1,120 @@
+{
+    "name": "dcm2bids-session",
+    "description": "Runs dcm2niix on a session's scans, and uploads the nifti and bids json",
+    "version": "0.1.0",
+    "schema-version": "1.0",
+    "type": "docker",
+    "image": "brownbnc/xnat-dcm2bids-session:latest",
+    "command-line": "python dicom2bids.py #SESSION_ID# #OVERWRITE# #BIDSMAP_FNAME# --host $XNAT_HOST --user $XNAT_USER --pass $XNAT_PASS --upload-by-ref False --dicomdir /dicom --niftidir /nifti",
+    "workdir": "/opt/src",
+    "override-entrypoint": true,
+    "mounts": [
+        {
+            "name": "nifti",
+            "writable": "true",
+            "path": "/nifti"
+        },
+        {
+            "name": "bidsmap_mount",
+            "writable": "true",
+            "path": "/Resources/bids"
+        }
+    ],
+    "inputs": [
+        {
+            "name": "session_id",
+            "description": "XNAT ID of the session",
+            "type": "string",
+            "required": true,
+            "replacement-key": "#SESSION_ID#",
+            "command-line-flag": "--session"
+        },
+        {
+            "name": "overwrite",
+            "description": "Overwrite any existing NIFTI and BIDS scan resources?",
+            "type": "boolean",
+            "required": false,
+            "default-value": false,
+            "replacement-key": "#OVERWRITE#",
+            "true-value": "True",
+            "false-value": "False",
+            "command-line-flag": "--overwrite"
+        },
+        {
+            "name": "bidsmap_in_fname",
+            "description": "Bidsamap filename",
+            "type": "string",
+            "required": true,
+            "replacement-key": "#BIDSMAP_FNAME#",
+            "true-value": null,
+            "false-value": null,
+            "command-line-flag": "--bidsmap"
+        }
+    ],
+    "outputs": [],
+    "xnat": [
+        {
+            "name": "dcm2bids-session-session",
+            "description": "Run dcm2niix-session on a Session",
+            "contexts": ["xnat:imageSessionData"],
+            "external-inputs": [
+                {
+                    "name": "session",
+                    "description": "Input session",
+                    "type": "Session",
+                    "required": true
+                },
+                {
+                    "name": "bidsmap_external_resource",
+                    "description": "The bidsmap resource",
+                    "type": "Resource",
+                    "required": true,
+                    "provides-files-for-command-mount": "bidsmap_mount"
+                }
+            ],
+            "derived-inputs": [
+                {
+                    "name": "session-id",
+                    "description": "The session's id",
+                    "type": "string",
+                    "derived-from-wrapper-input": "session",
+                    "derived-from-xnat-object-property": "id",
+                    "provides-value-for-command-input": "session_id"
+                },
+                {
+                "name": "bidsmap_derived_file",
+                "description": "The bidsmap file of the input volume",
+                "type": "File",
+                "matcher": "@.name =~ /Resources/bids/*.json",
+                "default-value": null,
+                "required": true,
+                "replacement-key": null,
+                "provides-value-for-command-input": "",
+                "provides-files-for-command-mount": "",
+                "user-settable": null,
+                "load-children": true,
+                "derived-from-wrapper-input": "bidsmap_external_resource",
+                "derived-from-xnat-object-property": null,
+                "via-setup-command": null
+                },
+                {
+                "name": "bidsmap_dev_fname",
+                "description": "The bidsmap file name of the input volume",
+                "type": "File",
+                "matcher": "",
+                "default-value": null,
+                "required": true,
+                "replacement-key": null,
+                "provides-value-for-command-input": "bidsmap_in_fname",
+                "provides-files-for-command-mount": "",
+                "user-settable": null,
+                "load-children": false,
+                "derived-from-wrapper-input": "bidsmap_derived_file",
+                "derived-from-xnat-object-property": "name",
+                "via-setup-command": null
+                }
+            ],
+            "output-handlers": []
+        }
+    ]
+}
