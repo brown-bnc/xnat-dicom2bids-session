@@ -13,7 +13,7 @@ RUN cd /opt && \
     rm dcm* 
 
 RUN  mkdir -p /opt/src
-COPY dicom2bids.py /opt/src/dicom2bids.py
+COPY dicom2bids-session/dicom2bids.py /opt/src/dicom2bids.py
 
 RUN apt-get remove -y curl zip && \
     apt-get autoremove -y && \
