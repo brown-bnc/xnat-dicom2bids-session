@@ -190,7 +190,7 @@ if set(seriesDescList) == set(['']):
 bidsmaplist = []
 
 print("Get project BIDS map if one exists")
-r = sess.get(host + "/data/projects/%s/config/bids/files/bidsmap.json" % project, params={"contents": True})
+r = sess.get(host + "/data/projects/%s/resources/config/files/bidsmap.json" % project, params={"contents": True})
 if r.ok:
     bidsmaptoadd = r.json()
     print("BIDS bidsmaptoadd: ",  bidsmaptoadd)
