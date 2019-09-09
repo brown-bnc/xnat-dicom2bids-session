@@ -5,7 +5,6 @@
 set -e
 
 DOCKER_REPO="brownbnc"
-IMAGE="xnat-dicom2bids-session"
 DOCKER_PUSH="docker push"
 FORCE=False
 SKIP_PUSH=False
@@ -28,6 +27,8 @@ while getopts h:t:fs opt; do
 		h) usage; exit;;
 	esac
 done
+shift $((OPTIND-1))
+
 
 # Bail if we're on a dirty git tree
 echo "Force Build? $FORCE"
@@ -40,10 +41,16 @@ if ! $FORCE; then
 	fi
 fi
 
-GIT_REV=$(git log -n 1 --pretty=format:%h)
+GIT_REV=$(git log -n 1 --pretty=format:%h -- ${IMAGE})
 TAG="${GIT_REV}"
 
+IMAGE="$1"
+
 echo "Building $IMAGE"
+if [ ! -f ${IMAGE}/Dockerfile ]; then
+echo "No such file: ${IMAGE}/Dockerfile"
+exit 1
+fi
 
 IMAGE_SPEC="${DOCKER_REPO}/${IMAGE}:${TAG}"
 docker build -f Dockerfile -t ${IMAGE_SPEC} .
