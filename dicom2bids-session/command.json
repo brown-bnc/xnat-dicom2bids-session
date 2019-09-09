@@ -1,12 +1,12 @@
 {
-    "name": "Test",
-    "description": "Test",
-    "version": "1.5.1",
+    "name": "dcm2bids",
+    "description": "Convert DICOM files to nifti with BIDS JSON side carts. Ourput directory is not arranged for BIDS",
+    "version": "0.1.0",
     "schema-version": "1.0",
     "type": "docker",
     "image": "brownbnc/xnat-dcm2bids-session:latest",
     "command-line": "python dicom2bids.py #SESSION_ID# #OVERWRITE# --host $XNAT_HOST --user $XNAT_USER --pass $XNAT_PASS --upload-by-ref False --dicomdir /dicom --niftidir /nifti",
-    "workdir": "/src",
+    "workdir": "/opt/src",
     "override-entrypoint": true,
     "mounts": [
         {
@@ -44,8 +44,8 @@
     "outputs": [],
     "xnat": [
         {
-            "name": "Test-session",
-            "description": "Test",
+            "name": "dcm2bids-session",
+            "description": "Convert DICOM files to nifti with BIDS JSON side carts. Output directory is not arranged for BIDS",
             "contexts": ["xnat:imageSessionData"],
             "external-inputs": [
                 {

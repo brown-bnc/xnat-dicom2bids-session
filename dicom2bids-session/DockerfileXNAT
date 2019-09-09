@@ -1,0 +1,23 @@
+FROM python:3.7
+
+RUN apt-get update && apt-get install -y curl zip pigz
+
+RUN pip install pydicom nipype requests && \
+    rm -r ${HOME}/.cache/pip 
+
+RUN cd /opt && \
+    curl -L https://github.com/rordenlab/dcm2niix/releases/download/v1.0.20190410/dcm2niix_11-Apr-2019_lnx.zip  > dcm2niix.zip && \
+    unzip dcm2niix.zip && \
+    mv dcm2niix /usr/local/bin && \
+    chmod a+x /usr/local/bin/dcm2niix && \
+    rm dcm* 
+
+RUN  mkdir -p /opt/src
+COPY dicom2bids.py /opt/src/dicom2bids.py
+
+RUN apt-get remove -y curl zip && \
+    apt-get autoremove -y && \
+    apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+WORKDIR /opt/src
+LABEL org.nrg.commands="[{\"name\": \"Test\", \"description\": \"Test\", \"version\": \"1.5.1\", \"schema-version\": \"1.0\", \"type\": \"docker\", \"image\": \"brownbnc/xnat-dcm2bids-session:latest\", \"command-line\": \"python dicom2bids.py #SESSION_ID# #OVERWRITE# --host \$XNAT_HOST --user \$XNAT_USER --pass \$XNAT_PASS --upload-by-ref False --dicomdir /dicom --niftidir /nifti\", \"workdir\": \"/src\", \"override-entrypoint\": true, \"mounts\": [{\"name\": \"nifti\", \"writable\": \"true\", \"path\": \"/nifti\"}, {\"name\": \"bidsmap_mount\", \"writable\": \"false\", \"path\": \"/bidsmap\"}], \"inputs\": [{\"name\": \"session_id\", \"description\": \"XNAT ID of the session\", \"type\": \"string\", \"required\": true, \"replacement-key\": \"#SESSION_ID#\", \"command-line-flag\": \"--session\"}, {\"name\": \"overwrite\", \"description\": \"Overwrite any existing NIFTI and BIDS scan resources?\", \"type\": \"boolean\", \"required\": false, \"default-value\": false, \"replacement-key\": \"#OVERWRITE#\", \"true-value\": \"True\", \"false-value\": \"False\", \"command-line-flag\": \"--overwrite\"}], \"outputs\": [], \"xnat\": [{\"name\": \"Test-session\", \"description\": \"Test\", \"contexts\": [\"xnat:imageSessionData\"], \"external-inputs\": [{\"name\": \"session\", \"description\": \"Input session\", \"type\": \"Session\", \"required\": true}], \"derived-inputs\": [{\"name\": \"derived_session_id\", \"description\": \"The session's id\", \"type\": \"string\", \"derived-from-wrapper-input\": \"session\", \"derived-from-xnat-object-property\": \"id\", \"provides-value-for-command-input\": \"session_id\"}], \"output-handlers\": []}]}]"
