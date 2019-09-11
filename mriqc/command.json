@@ -40,7 +40,7 @@
                     "type": "Session",
                     "required": true,
                     "provides-files-for-command-mount": "in",
-                    "via-setup-command": "xnat/xnat2bids-setup:1.1:xnat2bids",
+                    "via-setup-command": "brownbnc/xnat2bids:1.1:xnat2bids",
                     "load-children": false
                 }
             ],

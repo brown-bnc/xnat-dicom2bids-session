@@ -5,4 +5,4 @@ RUN pip install \
     && \
     rm -r ${HOME}/.cache/pip
 
-ADD xnat2bids.py /usr/local/bin
+ADD xnat2bids/xnat2bids.py /usr/local/bin
