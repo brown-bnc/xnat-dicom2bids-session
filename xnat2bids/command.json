@@ -4,5 +4,5 @@
     "version": "1.1",
     "type": "docker-setup",
     "image": "bnc/xnat2bids-setup:1.1",
-    "command-line": "xnat2bids.py /input /output"
+    "command-line": "python xnat2bids.py /input /output"
 }
