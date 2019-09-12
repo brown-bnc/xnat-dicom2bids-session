@@ -6,3 +6,5 @@ RUN pip install \
     rm -r ${HOME}/.cache/pip
 
 COPY xnat2bids/xnat2bids.py /usr/local/bin
+
+RUN chmod +x /usr/local/bin/xnat2bids.py

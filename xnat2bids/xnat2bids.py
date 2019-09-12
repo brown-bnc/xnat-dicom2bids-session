@@ -204,6 +204,12 @@ if sessionBidsScans:
         # We would have already printed an error message, so no need to print anything here
         sys.exit(1)
     bidsSubjectMap = {subject: BidsSubject(subject, bidsScans=sessionBidsScans)}
+    # Copy the BIDS/dataset_description.json to the root
+    print("Copying BIDS description file to the root dir.")
+    sessionBidsJsonPath = os.path.join(inputDir, 'RESOURCES', 'BIDS', 'dataset_description.json')
+    shutil.copy(sessionBidsJsonPath, outputDir)
+
+
 else:
     # Ok, we didn't find any BIDS scan directories in inputDir. We may be looking at a collection of session directories.
     print("")
@@ -258,5 +264,7 @@ for bidsSubject in bidsSubjectMap.itervalues():
             copyScanBidsFiles(sessionDir, bidsSession.bidsScans)
     else:
         copyScanBidsFiles(subjectDir, bidsSubject.bidsScans)
+
+print(os.listdir(outputDir))
 
 print("Done.")
