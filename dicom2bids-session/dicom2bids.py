@@ -205,7 +205,7 @@ else:
 # Get site-level configs
 print("Get Site BIDS map ")
 # We don't use the convenience get() method because that throws exceptions when the object is not found.
-r = sess.get(host + "/data/config/bids/files/bidsmap.json", params={"contents": True})
+r = sess.get(host + "/data/config/bids/bidsmap", params={"contents": True})
 if r.ok:
     bidsmaptoadd = r.json()
     print("BIDS bidsmaptoadd: ",  bidsmaptoadd)
