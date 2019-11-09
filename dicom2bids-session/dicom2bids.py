@@ -190,6 +190,7 @@ if set(seriesDescList) == set(['']):
 bidsmaplist = []
 
 print("Get project BIDS map if one exists")
+# We don't use the convenience get() method because that throws exceptions when the object is not found.
 r = sess.get(host + "/data/projects/%s/resources/config/files/bidsmap.json" % project, params={"contents": True})
 if r.ok:
     bidsmaptoadd = r.json()
@@ -199,6 +200,20 @@ if r.ok:
             bidsmaplist.append(mapentry)
 else:
     print("Could not read project BIDS map")
+
+
+# Get site-level configs
+print("Get Site BIDS map ")
+# We don't use the convenience get() method because that throws exceptions when the object is not found.
+r = sess.get(host + "/data/config/bids/files/bidsmap.json", params={"contents": True})
+if r.ok:
+    bidsmaptoadd = r.json()
+    print("BIDS bidsmaptoadd: ",  bidsmaptoadd)
+    for mapentry in bidsmaptoadd:
+        if mapentry not in bidsmaplist:
+            bidsmaplist.append(mapentry)
+else:
+    print("Could not read site-wide BIDS map")
 
 print("BIDS bidsmaplist: ", json.dumps(bidsmaplist))
 
