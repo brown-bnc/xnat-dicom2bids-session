@@ -9,13 +9,13 @@ These are inpired by many of the images provided by XNAT [here](https://github.c
 This rebository provides a convinience script to build and push the desired docker images. For instance to build the dicom2bids-session you can run
 
 ```
-./docker_build.bash -t 0.1.0 dicom2bids-session
+./build_docker.sh -f -t v0.1.0 dicom2bids-session
 ```
 
 In general, the format is as follows.
 
 ```
-./docker_build.bash [-t NAMED_TAG (optional)] [ image_folder ]
+./build_docker.sh [-t NAMED_TAG (optional)] [ image_folder ]
 ```
 
 ### Versioning and tags
