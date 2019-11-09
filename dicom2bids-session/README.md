@@ -1,9 +1,9 @@
 # dicom2bids-session
 
 For a given XNAT session, this container will convert all dicoms to nifti and it will generate JSON BIDS side car.
-This container **does not** generate organize the files in a BIDS's ready directory.
+This container **does not** organize the files in a BIDS's ready directory.
 
-In order to use BID's apps in XNAT, as set-upt command is used to ourganized the output of this conatiner in a BIDS-compatible directory.
+In order to use BID's apps in XNAT, as set-upt command is used to organize the output of this conatiner in a BIDS-compatible directory.
 
 This container is based on XNAT's [original](https://github.com/NrgXnat/docker-images/tree/master/dcm2bids-session) with the following modifications:
 

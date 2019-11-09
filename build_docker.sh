@@ -63,7 +63,7 @@ python command2label.py ${IMAGE}/command.json >> ${IMAGE}/DockerfileXNAT
 
 IMAGE_SPEC="${DOCKER_REPO}/${IMAGE}:${TAG}"
 docker build -f ${IMAGE}/DockerfileXNAT -t ${IMAGE_SPEC} .
-docker tag ${DOCKER_REPO}/${IMAGE}:${TAG} ${DOCKER_REPO}/${IMAGE}:${NAMED_TAG}
+docker tag ${IMAGE_SPEC} ${DOCKER_REPO}/${IMAGE}:${NAMED_TAG}
 
 echo "Build ${IMAGE_SPEC} and ${DOCKER_REPO}/${IMAGE}:${NAMED_TAG}"
 
