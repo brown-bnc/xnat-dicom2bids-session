@@ -1,0 +1,26 @@
+[
+  {
+    "series_description": "AAHead_Scout_64ch-head-coil_MPR_sag",
+    "bidsname": "T1w"
+  },
+  {
+    "series_description": "AAHead_Scout_64ch-head-coil_MPR_cor",
+    "bidsname": "T1w"
+  },
+  {
+    "series_description": "AAHead_Scout_64ch-head-coil_MPR_tra",
+    "bidsname": "T1w"
+  },
+  {
+    "series_description": "T1_MEMPRAGE_1.0mm_p2",
+    "bidsname": "T1w"
+  },
+  {
+    "series_description": "T1_MEMPRAGE_1.0mm_p2 RMS",
+    "bidsname": "T1w"
+  },
+  {
+    "series_description": "ep2d_bold",
+    "bidsname": "task-rest_bold"
+  }
+]
