@@ -9,7 +9,7 @@ These are inpired by many of the images provided by XNAT [here](https://github.c
 This rebository provides a convinience script to build and push the desired docker images. For instance to build the dicom2bids-session you can run
 
 ```
-./build_docker.sh -f -t v0.1.0 dicom2bids-session
+./build_docker.sh -t v0.1.0 xnat-dicom2bids-session
 ```
 
 In general, the format is as follows.
