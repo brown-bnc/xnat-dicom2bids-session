@@ -383,11 +383,13 @@ def main(args):
     investigator = project.lower().split('_')[0] 
 
      # Paths to export source data in a BIDS friendly way
+    study_prefix = "study-" + project.lower().split('_')[1]
+    subject_prefix = "sub-" + subject.lower()
+    session_prefix = "ses-"+ session.lower()
 
-    bids_study_dir = os.path.join(bids_root_dir, investigator, project)
-    base = "sub-" + subject + "_"
-    bids_subject_dir = os.path.join(bids_study_dir, "sourcedata", subject)
-    bids_session_dir = os.path.join(bids_subject_dir, "ses-"+ session)
+    bids_study_dir = os.path.join(bids_root_dir, investigator, study_prefix)
+    bids_subject_dir = os.path.join(bids_study_dir, "xnat-export", subject_prefix)
+    bids_session_dir = os.path.join(bids_subject_dir, session_prefix)
 
     # Set up working directory
     if not os.access(bids_session_dir, os.R_OK):
