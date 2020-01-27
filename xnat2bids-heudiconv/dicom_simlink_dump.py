@@ -71,49 +71,17 @@ def download(name, pathDict):
                 f.write(block)
         print('Downloaded remote file %s.' % name)
 
-def zipdir(dirPath=None, zipFilePath=None, includeDirInZip=True):
-    if not zipFilePath:
-        zipFilePath = dirPath + ".zip"
-    if not os.path.isdir(dirPath):
-        raise OSError("dirPath argument must point to a directory. "
-            "'%s' does not." % dirPath)
-    parentDir, dirToZip = os.path.split(dirPath)
-    def trimPath(path):
-        archivePath = path.replace(parentDir, "", 1)
-        if parentDir:
-            archivePath = archivePath.replace(os.path.sep, "", 1)
-        if not includeDirInZip:
-            archivePath = archivePath.replace(dirToZip + os.path.sep, "", 1)
-        return os.path.normcase(archivePath)
-    outFile = zipfile.ZipFile(zipFilePath, "w",
-        compression=zipfile.ZIP_DEFLATED)
-    for (archiveDirPath, dirNames, fileNames) in os.walk(dirPath):
-        for fileName in fileNames:
-            filePath = os.path.join(archiveDirPath, fileName)
-            outFile.write(filePath, trimPath(filePath))
-        # Make sure we get empty directories as well
-        if not fileNames and not dirNames:
-            zipInfo = zipfile.ZipInfo(trimPath(archiveDirPath) + "/")
-            # some web sites suggest doing
-            # zipInfo.external_attr = 16
-            # or
-            # zipInfo.external_attr = 48
-            # Here to allow for inserting an empty directory.  Still TBD/TODO.
-            outFile.writestr(zipInfo, "")
-    outFile.close()
 
-def parse_args():
-    parser = argparse.ArgumentParser(description="Run dcm2niix on every file in a session")
+def parse_args(**kwargs):
+    parser = argparse.ArgumentParser(description="Dump DICOMS to a BIDS firendly sourcedata directory")
     parser.add_argument("--host", default="https://cnda.wustl.edu", help="CNDA host", required=True)
     parser.add_argument("--user", help="CNDA username", required=True)
     parser.add_argument("--password", help="Password", required=True)
     parser.add_argument("--session", help="Session ID", required=True)
     parser.add_argument("--subject", help="Subject Label", required=False)
     parser.add_argument("--project", help="Project", required=False)
-    parser.add_argument("--dicomdir", help="Root output directory for DICOM files", required=True)
-    parser.add_argument("--overwrite", help="Overwrite NIFTI files if they exist")
-    parser.add_argument("--upload-by-ref", help="Upload \"by reference\". Only use if your host can read your file system.")
-    parser.add_argument("--workflowId", help="Pipeline workflow ID")
+    parser.add_argument("--bids_root_dir", help="Root output directory for BIDS files", required=True)
+    # parser.add_argument("--overwrite", help="Overwrite NIFTI files if they exist")
     parser.add_argument('--version', action='version', version='%(prog)s 1')
 
     args, unknown_args = parser.parse_known_args()
@@ -123,33 +91,20 @@ def parse_args():
     project = args.project
     overwrite = isTrue(args.overwrite)
     dicomdir = args.dicomdir
-    niftidir = args.niftidir
-    workflowId = args.workflowId
-    uploadByRef = isTrue(args.upload_by_ref)
-
-    imgdir = niftidir + "/IMG"
-    bidsdir = niftidir + "/BIDS"
 
     builddir = os.getcwd()
 
     # Set up working directory
-    if not os.access(dicomdir, os.R_OK):
-        print('Making DICOM directory %s' % dicomdir)
-        os.mkdir(dicomdir)
-    if not os.access(niftidir, os.R_OK):
-        print('Making NIFTI directory %s' % niftidir)
-        os.mkdir(niftidir)
-    if not os.access(imgdir, os.R_OK):
-        print('Making NIFTI image directory %s' % imgdir)
-        os.mkdir(imgdir)
-    if not os.access(bidsdir, os.R_OK):
-        print('Making NIFTI BIDS directory %s' % bidsdir)
-        os.mkdir(bidsdir)
+    if not os.access(bids_root_dir, os.R_OK):
+        print('Making BIDS directory %s' % bids_root_dir)
+        os.mkdir(bids_root_dir)
 
     # Set up session
     sess = requests.Session()
     sess.verify = False
     sess.auth = (args.user, args.password)
+
+    return sess
 
 
 def get(url, **kwargs):
@@ -164,23 +119,22 @@ def get(url, **kwargs):
 
 
 def get_project_and_subject_id(project, subject, session):
-    #  IS THIS CODE NEEDED?
-    if project is None or subject is None:
-        # Get project ID and subject ID from session JSON
-        print("Get project and subject ID for session ID %s." % session)
-        r = get(host + "/data/experiments/%s" % session, params={"format": "json", "handler": "values", "columns": "project,subject_ID"})
-        sessionValuesJson = r.json()["ResultSet"]["Result"][0]
-        project = sessionValuesJson["project"] if project is None else project
-        subjectID = sessionValuesJson["subject_ID"]
-        print("Project: " + project)
-        print("Subject ID: " + subjectID)
+    """Get project ID and subject ID from session JSON
+       If calling within XNAT, only session is passed"""
+    print("Get project and subject ID for session ID %s." % session)
+    r = get(host + "/data/experiments/%s" % session, params={"format": "json", "handler": "values", "columns": "project,subject_ID"})
+    sessionValuesJson = r.json()["ResultSet"]["Result"][0]
+    project = sessionValuesJson["project"] if project is None else project
+    subjectID = sessionValuesJson["subject_ID"]
+    print("Project: " + project)
+    print("Subject ID: " + subjectID)
 
-        if subject is None:
-            print()
-            print("Get subject label for subject ID %s." % subjectID)
-            r = get(host + "/data/subjects/%s" % subjectID, params={"format": "json", "handler": "values", "columns": "label"})
-            subject = r.json()["ResultSet"]["Result"][0]["label"]
-            print("Subject label: " + subject)
+    if subject is None:
+        print()
+        print("Get subject label for subject ID %s." % subjectID)
+        r = get(host + "/data/subjects/%s" % subjectID, params={"format": "json", "handler": "values", "columns": "label"})
+        subject = r.json()["ResultSet"]["Result"][0]["label"]
+        print("Subject label: " + subject)
 
     return project, subject
 
@@ -254,7 +208,7 @@ def assign_bids_name(subject, scanIDList, seriesDescList, build_dir, study_bids_
         scanIDList: ID List of scans 
         seriesDescList: List of series descriptions
         build_dir: build director. What is this?
-        session_bids_path: BIDS directory to copy simlinks to. Typically the RESOURCES/BIDS
+        study_bids_dir: BIDS directory to copy simlinks to. Typically the RESOURCES/BIDS
     """
     
     # Paths to export source data in a BIDS friendly way
@@ -330,7 +284,7 @@ def assign_bids_name(subject, scanIDList, seriesDescList, build_dir, study_bids_
             filesURL = host + "/data/experiments/%s/scans/%s/resources/DICOM/files" % (session, scanid)
         
         r = get(filesURL, params={"format": "json"})
-        # I don't like the results being in a list, so I will build a dict keyed off file name
+        # Build a dict keyed off file name
         dicomFileDict = {dicom['Name']: {'URI': host + dicom['URI']} for dicom in r.json()["ResultSet"]["Result"]}
 
         print("**********")
@@ -374,9 +328,23 @@ def assign_bids_name(subject, scanIDList, seriesDescList, build_dir, study_bids_
 
         os.chdir(build_dir)
         print('Done downloading for scan %s.' % scanid)
-       
+    
 def main():
-    parse_args()
-    project, subject = get_project_and_subject_id() 
-    get_scan_ids(session)
-    assign_bids_name(subject, scanIDList, seriesDescList, build_dir, study_bids_dir)
+    sess, session, project, subject, bids_root_dir = parse_args()
+    
+    if project is None or subject is None:
+        project, subject = get_project_and_subject_id(session) 
+    
+    scanIDList, seriesDescList = get_scan_ids(session)
+    
+    #get PI from project name
+    investigator = project.lower().split('-')[0] 
+
+    bids_study_dir = os.path.join(bids_root_dir, investigator, project)
+
+    # Set up working directory
+    if not os.access(bids_study_dir, os.R_OK):
+        print('Making BIDS directory %s' % bids_study_dir)
+        os.mkdir(bids_study_dir)
+
+    assign_bids_name(subject, scanIDList, seriesDescList, build_dir, bids_study_dir)
