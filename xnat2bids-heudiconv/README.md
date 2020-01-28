@@ -41,3 +41,6 @@ heudiconv -f reproin --bids -o /data/xnat-dev/bids-export/sanes/study-sadlum/raw
 heudiconv -f reproin --bids -o /data/xnat-dev/bids-export/sanes/study-sadlum/rawdata/ --dicom_dir_template /data/xnat-dev/bids-export/sanes/study-sadlum/sourcedata/sub-{subject}/ses-{session}/*/*.dcm --subjects bidstest --ses xnat_dev_e00009  -c none
 
 heudiconv -f reproin --bids -o /data/xnat-dev/bids-export/sanes/study-sadlum/rawdata/ --files /data/xnat-dev/bids-export/sanes/study-sadlum/sourcedata/sub-bidstest/ses-xnat_dev_e00009 -c none
+
+
+heudiconv -f reproin --bids -o /data/xnat-dev/bids-export/sanes/study-sadlum/rawdata/ --dicom_dir_template /data/xnat-dev/bids-export/sanes/study-sadlum/sourcedata/sub-{subject}/ses-{session}/*/*.dcm --subjects bidstest --ses xnat_dev_e00009
