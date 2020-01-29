@@ -1,4 +1,11 @@
-## Testing
+# XNAT2BIDS-HEUDICONV
+
+This container and python scripts facilitates exporting data from XNAT to BIDS format following these steps:
+
+1. Export to a heudiconv freindly directory structure. We follow the structure sugegsted by [this ReproIn guide](https://github.com/ReproNim/reproin), enabling us to use their heuristic. Also, note that the given command exports to path /data/xnat/bids-export. We mount this path to our XNAT instance. This step is encapsulated in `src/dicom_export.py`
+2. We run Heudiconv using ReproIn heuristic. This step is encapsulated in `src/run_heudiconv.py`
+
+## Testing in remote ( Developers)
 
 In remote
 
@@ -30,14 +37,14 @@ docker run --rm -it --entrypoint /bin/bash  \
 
 #### Export dicoms
 ```
-python dicom_export.py --host http://bnc.brown.edu/xnat-dev --user admin --password admin --subject BIDSTEST --session XNAT_DEV_E00009 --project SANES_SADLUM --bids_root_dir "/data/xnat-dev/bids-export"
+python dicom_export.py --host http://bnc.brown.edu/xnat-dev --user <user> --password <pass> --subject BIDSTEST --session XNAT_DEV_E00009 --project SANES_SADLUM --bids_root_dir "/data/xnat-dev/bids-export"
 ```
 #### Convert to BIDS
 
 
 #### Leverage XNAT values 
 ```
-python run_heudiconv.py --host http://bnc.brown.edu/xnat-dev --user admin --password admin --subject BIDSTEST --session XNAT_DEV_E00009 --project SANES_SADLUM --bids_root_dir "/data/xnat/bids-export"
+python run_heudiconv.py --host http://bnc.brown.edu/xnat-dev --user <user> --password <pass> --subject BIDSTEST --session XNAT_DEV_E00009 --project SANES_SADLUM --bids_root_dir "/data/xnat/bids-export"
 ```
 
 ##### Direct call to Heudiconv from inside container
