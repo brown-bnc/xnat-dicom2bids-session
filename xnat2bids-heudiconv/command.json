@@ -5,8 +5,8 @@
     "schema-version": "1.0",
     "type": "docker",
     "image": "brownbnc/xnat-dcm2bids-session:latest",
-    "command-line": "python dicom2bids.py #SESSION_ID# #OVERWRITE# --host $XNAT_HOST --user $XNAT_USER --pass $XNAT_PASS --upload-by-ref False --dicomdir /dicom --niftidir /nifti",
-    "workdir": "/opt/src",
+    "command-line": "./xnat_command.sh #SESSION_ID# $XNAT_HOST $XNAT_USER $XNAT_PASS",
+    "workdir": "/opt/src/bids",
     "override-entrypoint": true,
     "mounts": [
         {

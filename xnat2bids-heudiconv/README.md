@@ -20,7 +20,7 @@ docker pull brownbnc/xnat2bids-heudiconv:v0.1.0
 ```
 docker run --rm -it --entrypoint /bin/bash  \
            -v /maintain/src/xnat-docker-plugins/xnat2bids-heudiconv/:/opt/src/bids/ \
-           -v /mnt/brownresearch/xnat-dev/bids-export/:/data/xnat-dev/bids-export \
+           -v /mnt/brownresearch/xnat-dev/bids-export/:/data/xnat/bids-export \
            --name xnat2bids-heudiconv brownbnc/xnat2bids-heudiconv:v0.1.0 
 
 ```
@@ -37,7 +37,7 @@ python dicom_export.py --host http://bnc.brown.edu/xnat-dev --user admin --passw
 
 #### Leverage XNAT values 
 ```
-python run_heudiconv.py --host http://bnc.brown.edu/xnat-dev --user admin --password admin --subject BIDSTEST --session XNAT_DEV_E00009 --project SANES_SADLUM --bids_root_dir "/data/xnat-dev/bids-export"
+python run_heudiconv.py --host http://bnc.brown.edu/xnat-dev --user admin --password admin --subject BIDSTEST --session XNAT_DEV_E00009 --project SANES_SADLUM --bids_root_dir "/data/xnat/bids-export"
 ```
 
 ##### Direct call to Heudiconv from inside container
@@ -46,5 +46,5 @@ If need to test Heudiconv directly we can do:
 <!-- heudiconv -f reproin --bids -o /data/xnat-dev/bids-export/sanes/study-sadlum/rawdata/sub-bidstest/ses-xnat_dev_e00009 --files /data/xnat-dev/bids-export/sanes/study-sadlum/sourcedata/sub-bidstest/ses-xnat_dev_e00009 -c none -->
 
 ```
-heudiconv -f reproin --bids -o /data/xnat-dev/bids-export/sanes/study-sadlum/rawdata/ --dicom_dir_template /data/xnat-dev/bids-export/sanes/study-sadlum/sourcedata/sub-{subject}/ses-{session}/*/*.dcm --subjects bidstest --ses xnat_dev_e00009
+heudiconv -f reproin --bids -o /data/xnat/bids-export/sanes/study-sadlum/rawdata/ --dicom_dir_template /data/xnat/bids-export/sanes/study-sadlum/sourcedata/sub-{subject}/ses-{session}/*/*.dcm --subjects bidstest --ses xnat_dev_e00009
 ```
