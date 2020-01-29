@@ -1,8 +1,9 @@
 import json
 import os
+import collections
 import six
 from six.moves import zip
-
+from xnat_utils import get, download
 
 def prepare_bids_prefixes(project, subject, session):
     #get PI from project name
@@ -15,7 +16,7 @@ def prepare_bids_prefixes(project, subject, session):
 
     return pi_prefix, study_prefix, subject_prefix, session_prefix
 
-def prepare_bids_output_path(pi_prefix, study_prefix, subject_prefix, session_prefix):
+def prepare_bids_output_path(bids_root_dir, pi_prefix, study_prefix, subject_prefix, session_prefix):
 
     bids_study_dir = os.path.join(bids_root_dir, pi_prefix, study_prefix)
     bids_subject_dir = os.path.join(bids_study_dir, "xnat-export", subject_prefix)
@@ -25,6 +26,31 @@ def prepare_bids_output_path(pi_prefix, study_prefix, subject_prefix, session_pr
     if not os.access(bids_session_dir, os.R_OK):
         print('Making output BIDS Session directory %s' % bids_study_dir)
         os.makedirs(bids_session_dir)
+
+    return bids_session_dir
+
+def prepare_heudi_prefixes(project, subject, session):
+    #get PI from project name
+    pi_prefix = project.lower().split('_')[0] 
+
+     # Paths to export source data in a BIDS friendly way
+    study_prefix = "study-" + project.lower().split('_')[1]
+    subject_prefix = subject.lower()
+    session_prefix = session.lower()
+
+    return pi_prefix, study_prefix, subject_prefix, session_prefix
+
+def prepare_heudiconv_output_path(bids_root_dir, pi_prefix, study_prefix, subject_prefix, session_prefix):
+
+    heudi_study_dir = os.path.join(bids_root_dir, pi_prefix, study_prefix)
+    heudi_output_dir = os.path.join(heudi_study_dir, "bids")
+
+    # Set up working directory
+    if not os.access(heudi_output_dir, os.R_OK):
+        print('Making output BIDS Session directory %s' % heudi_output_dir)
+        os.makedirs(heudi_output_dir)
+
+    return heudi_output_dir
 
 def populate_bidsmap(connection, host, project, seriesDescList):
     # Read bids map from input config
@@ -130,6 +156,8 @@ def assign_bids_name(connection, host, subject, session, scanIDList, seriesDescL
             print("DICOM resources for scan %s have a blank \"file_count\", so I cannot check to see if there are no files. I am not skipping the scan, but this may lead to errors later if there are no files." % scanid)
 
         # BIDS sourcedatadirectory for this scan
+        print("bids_session_dir: ", bids_session_dir)
+        print("bidsname: ", bidsname)
         bids_scan_directory = os.path.join(bids_session_dir, bidsname)
 
         if not os.path.isdir(bids_scan_directory):

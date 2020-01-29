@@ -131,9 +131,7 @@ def main(args):
     
     pi_prefix, study_prefix, subject_prefix, session_prefix = prepare_bids_prefixes(project, subject, session)
 
-    bids_session_dir = prepare_bids_output_path(pi_prefix, study_prefix, subject_prefix, session_prefix)
-    
-
+    bids_session_dir = prepare_bids_output_path(bids_root_dir, pi_prefix, study_prefix, subject_prefix, session_prefix)
     
     # Prepare files for heudiconv
     bidsnamemap = populate_bidsmap(connection, host, project, seriesDescList)
