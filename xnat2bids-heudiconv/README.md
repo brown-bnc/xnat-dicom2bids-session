@@ -37,6 +37,10 @@ docker run --rm -it --entrypoint /bin/bash \
 
 ```
 
+docker run --rm -it --entrypoint /bin/bash \
+           -v /Users/mrestrep/data/bids-export/:/data/xnat/bids-export \
+           --name xnat2bids-heudiconv brownbnc/xnat2bids-heudiconv:v0.1.0 
+
 ### Run scripts
 
 #### Export dicoms

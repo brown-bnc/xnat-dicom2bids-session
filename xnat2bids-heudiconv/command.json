@@ -13,6 +13,11 @@
             "name": "bidsmap_mount",
             "writable": "false",
             "path": "/bidsmap"
+        },
+        {
+            "name": "bids_export_mount",
+            "writable": "true",
+            "path": "/data/xnat/bids-export"
         }
     ],
     "inputs": [
