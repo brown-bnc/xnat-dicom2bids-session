@@ -115,7 +115,7 @@ def main(args):
 
     # Set up working directory
     if not os.access(bids_root_dir, os.R_OK):
-        raise ValueError('BIDS Root directory must exist')
+        raise ValueError(f"BIDS Root directory must exist: {bids_root_dir}")
         # print('Making BIDS directory %s' % bids_root_dir)
         # os.mkdir(bids_root_dir)
 
