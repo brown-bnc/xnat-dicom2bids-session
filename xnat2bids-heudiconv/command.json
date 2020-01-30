@@ -1,19 +1,14 @@
 {
-    "name": "dcm2bids",
-    "description": "Convert DICOM files to nifti with BIDS JSON side carts. Ourput directory is not arranged for BIDS",
+    "name": "xnat2bids-heudiconv",
+    "description": "Export DICOMS to BIDS format using heudiconv",
     "version": "0.1.0",
     "schema-version": "1.0",
     "type": "docker",
-    "image": "brownbnc/xnat-dcm2bids-session:latest",
+    "image": "brownbnc/xnat2bids-heudiconv:v0.1.0",
     "command-line": "./xnat_command.sh #SESSION_ID# $XNAT_HOST $XNAT_USER $XNAT_PASS",
     "workdir": "/opt/src/bids",
     "override-entrypoint": true,
     "mounts": [
-        {
-            "name": "nifti",
-            "writable": "true",
-            "path": "/nifti"
-        },
         {
             "name": "bidsmap_mount",
             "writable": "false",
@@ -26,26 +21,14 @@
             "description": "XNAT ID of the session",
             "type": "string",
             "required": true,
-            "replacement-key": "#SESSION_ID#",
-            "command-line-flag": "--session"
-        },
-        {
-            "name": "overwrite",
-            "description": "Overwrite any existing NIFTI and BIDS scan resources?",
-            "type": "boolean",
-            "required": false,
-            "default-value": false,
-            "replacement-key": "#OVERWRITE#",
-            "true-value": "True",
-            "false-value": "False",
-            "command-line-flag": "--overwrite"
+            "replacement-key": "#SESSION_ID#"
         }
     ],
     "outputs": [],
     "xnat": [
         {
-            "name": "dcm2bids-session",
-            "description": "Convert DICOM files to nifti with BIDS JSON side carts. Output directory is not arranged for BIDS",
+            "name": "xnat2bids-heudiconv",
+            "description": "Export DICOMS to BIDS format using heudiconv",
             "contexts": ["xnat:imageSessionData"],
             "external-inputs": [
                 {

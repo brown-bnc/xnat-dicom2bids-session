@@ -22,8 +22,6 @@ docker pull brownbnc/xnat2bids-heudiconv:v0.1.0
 ```
 
 ### Run with source and needed volumes
-
-
 ```
 docker run --rm -it --entrypoint /bin/bash  \
            -v /maintain/src/xnat-docker-plugins/xnat2bids-heudiconv/:/opt/src/bids/ \
@@ -31,7 +29,13 @@ docker run --rm -it --entrypoint /bin/bash  \
            --name xnat2bids-heudiconv brownbnc/xnat2bids-heudiconv:v0.1.0 
 
 ```
+### Run without local source
+```
+docker run --rm -it --entrypoint /bin/bash \
+           -v /mnt/brownresearch/xnat-dev/bids-export/:/data/xnat/bids-export \
+           --name xnat2bids-heudiconv brownbnc/xnat2bids-heudiconv:v0.1.0 
 
+```
 
 ### Run scripts
 
