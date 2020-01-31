@@ -43,6 +43,7 @@ docker run --rm -it --entrypoint /bin/bash \
            --name xnat2bids-heudiconv brownbnc/xnat2bids-heudiconv:v0.1.0 
 
 ./xnat_command.sh XNAT_DEV_E00009 http://bnc.brown.edu/xnat-dev admin admin
+python run_heudiconv.py --session XNAT_DEV_E00009 --host http://bnc.brown.edu/xnat-dev --user admin --pass admin --bids_root_dir /data/xnat/bids-export
 ```
 
 ### Run scripts
